@@ -38,10 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get build artifacts
-        uses: actions/download-artifacts@v3
+        uses: actions/download-artifact@v3
         with:
           name: dist-files
-      - name: Output contents
-        run: ls
+      - name: Output contents # # show you are already in the dist folder by listing the contents of it 
+        run: |
+          pwd
+          ls
       - name: Deploy
         run: echo "Deploying..."
