@@ -18,6 +18,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      script-file:  ${{ steps.publish.outputs.script-file-name }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -25,6 +27,10 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'script-file-name={}' >> $GITHUB_OUTPUT ';'
+        # old syntax  run: find dist/assets/*.js -type f -execdir echo '::set-output name=script-file-name::{}' ';'
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -41,9 +47,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist-files
-      - name: Output contents # # show you are already in the dist folder by listing the contents of it 
+      - name: Output contents # # show you dont have the dist folder just the unpacked files 
         run: |
           pwd
           ls
+      - name: Output filenname
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."
